@@ -217,7 +217,7 @@ func (p *ProxyConfig) URL() string {
     if p.Username != "" {
         auth = p.Username + ":" + p.Password + "@"
     }
-    return p.Type + "://" + auth + p.Host + ":" + string(rune(p.Port))
+    return fmt.Sprintf("%s://%s%s:%d", p.Type, auth, p.Host, p.Port)
 }
 
 type AgentConfig struct {
