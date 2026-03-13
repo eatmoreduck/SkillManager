@@ -352,21 +352,70 @@ type ConfigRepository interface {
 
 ## 9. 文件存储结构
 
-### 9.1 应用数据目录
+### 9.1 应用数据目录（跨平台）
+
+使用平台特定的标准目录：
+
+| 平台 | 配置目录 | 缓存/日志目录 |
+|------|----------|---------------|
+| Windows | `%APPDATA%/skillmanager/` | `%LOCALAPPDATA%/skillmanager/` |
+| macOS | `~/Library/Application Support/skillmanager/` | `~/Library/Caches/skillmanager/` |
+| Linux | `~/.config/skillmanager/` | `~/.local/share/skillmanager/` |
 
 ```
-~/.skillmanager/
-├── config.yaml              # 主配置文件
-├── skills/                  # 本地 skill 存储
-│   ├── claude-code-tdd/
-│   │   ├── SKILL.md
-│   │   └── .git/
-│   ├── python-patterns/
-│   │   ├── SKILL.md
-│   │   └── .git/
-│   └── ...
+${CONFIG_DIR}/                    # 平台特定配置目录
+├── config.yaml                   # 主配置文件
+└── skills/                       # 本地 skill 存储
+    ├── claude-code-tdd/
+    │   ├── SKILL.md
+    │   └── .git/
+    ├── python-patterns/
+    │   ├── SKILL.md
+    │   └── .git/
+    └── ...
+
+${CACHE_DIR}/                     # 平台特定缓存目录
 └── logs/
     └── skillmanager.log
+```
+
+**Go 实现参考**：
+
+```go
+// internal/pkg/paths/paths.go
+package paths
+
+import (
+    "os"
+    "path/filepath"
+)
+
+// GetConfigDir 返回平台特定的配置目录
+func GetConfigDir() (string, error) {
+    dir, err := os.UserConfigDir()
+    if err != nil {
+        return "", err
+    }
+    return filepath.Join(dir, "skillmanager"), nil
+}
+
+// GetCacheDir 返回平台特定的缓存目录
+func GetCacheDir() (string, error) {
+    dir, err := os.UserCacheDir()
+    if err != nil {
+        return "", err
+    }
+    return filepath.Join(dir, "skillmanager"), nil
+}
+
+// GetSkillsDir 返回 skills 存储目录
+func GetSkillsDir() (string, error) {
+    configDir, err := GetConfigDir()
+    if err != nil {
+        return "", err
+    }
+    return filepath.Join(configDir, "skills"), nil
+}
 ```
 
 ### 9.2 Agent Skills 目录（符号链接）
@@ -384,7 +433,7 @@ type ConfigRepository interface {
 ### 9.3 配置文件示例
 
 ```yaml
-# ~/.skillmanager/config.yaml
+# ${CONFIG_DIR}/config.yaml (平台特定)
 version: "1.0"
 
 proxy:
