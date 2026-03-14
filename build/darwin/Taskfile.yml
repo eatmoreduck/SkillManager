@@ -6,11 +6,8 @@ includes:
 vars:
   APP_ICON_OUTPUT: 'build/darwin/icons.icns'
   MACOS_DEPLOYMENT_TARGET: '11.0'
-  MACOS_SDK:
-    sh: xcrun --show-sdk-path
-  CGO_MIN_VERSION_FLAG: '-mmacosx-version-min={{.MACOS_DEPLOYMENT_TARGET}}'
-  CGO_SYSROOT_FLAG: '-isysroot {{.MACOS_SDK}}'
-  CGO_COMMON_FLAGS: '{{.CGO_SYSROOT_FLAG}} {{.CGO_MIN_VERSION_FLAG}}'
+  APP_VERSION: '{{.VERSION | default (env "VERSION") | default "0.0.0"}}'
+  APP_ARCH: '{{.ARCH | default (env "ARCH") | default "amd64"}}'
 
 
 tasks:
@@ -24,12 +21,16 @@ tasks:
       - task: common:generate:icons
     cmds:
       - cmd: |
+          MACOS_SDK="$(xcrun --show-sdk-path)"
+          CGO_MIN_VERSION_FLAG="-mmacosx-version-min={{.MACOS_DEPLOYMENT_TARGET}}"
+          CGO_SYSROOT_FLAG="-isysroot ${MACOS_SDK}"
+          CGO_COMMON_FLAGS="${CGO_SYSROOT_FLAG} ${CGO_MIN_VERSION_FLAG}"
           env \
-            SDKROOT="{{.MACOS_SDK}}" \
+            SDKROOT="${MACOS_SDK}" \
             MACOSX_DEPLOYMENT_TARGET="{{.MACOS_DEPLOYMENT_TARGET}}" \
-            CGO_CFLAGS="-O2 -g {{.CGO_COMMON_FLAGS}}" \
-            CGO_CXXFLAGS="-O2 -g {{.CGO_COMMON_FLAGS}}" \
-            CGO_LDFLAGS="-O2 -g {{.CGO_COMMON_FLAGS}}" \
+            CGO_CFLAGS="-O2 -g ${CGO_COMMON_FLAGS}" \
+            CGO_CXXFLAGS="-O2 -g ${CGO_COMMON_FLAGS}" \
+            CGO_LDFLAGS="-O2 -g ${CGO_COMMON_FLAGS}" \
             go build -a -tags wails -o {{.OUTPUT}}
     vars:
       DEFAULT_OUTPUT: '{{.BIN_DIR}}/{{.APP_NAME}}'
@@ -60,7 +61,7 @@ tasks:
           trap 'rm -rf "$TMP_DIR"' EXIT
           cp -R "{{.BIN_DIR}}/{{.APP_NAME}}.app" "$TMP_DIR/"
           ln -s /Applications "$TMP_DIR/Applications"
-          hdiutil create -volname "{{.APP_NAME}}" -srcfolder "$TMP_DIR" -ov -format UDZO "{{.BIN_DIR}}/{{.APP_NAME}}.dmg"
+          hdiutil create -volname "{{.APP_NAME}}" -srcfolder "$TMP_DIR" -ov -format UDZO "{{.BIN_DIR}}/{{.APP_NAME}}-{{.APP_VERSION}}-macos-{{.APP_ARCH}}.dmg"
 
   run:
     summary: Runs the application from a temporary macOS .app bundle

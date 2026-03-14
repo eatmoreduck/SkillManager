@@ -1,7 +1,7 @@
 name: "skillmanager"
 arch: ${GOARCH}
 platform: "linux"
-version: "1.0.0"
+version: "${VERSION}"
 section: "default"
 priority: "extra"
 maintainer: "eatmoreduck <eatmoreduck66@gmail.com>"

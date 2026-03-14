@@ -5,6 +5,8 @@ includes:
 
 vars:
   PACKAGE_NAME: 'skillmanager'
+  APP_VERSION: '{{.VERSION | default (env "VERSION") | default "0.0.0"}}'
+  APP_ARCH: '{{.ARCH | default (env "ARCH") | default "amd64"}}'
 
 tasks:
   build:
@@ -48,13 +50,12 @@ tasks:
       - cp {{.APP_BINARY}} {{.APP_NAME}}
       - cp ../../../frontend/src/assets/logo.png appicon.png
       - bash build.sh
-      - mv {{.APP_NAME}}.AppImage ../../../bin/{{.APP_NAME}}-linux-{{.ARCH}}.AppImage
+      - mv {{.APP_NAME}}.AppImage ../../../bin/{{.APP_NAME}}-{{.APP_VERSION}}-linux-{{.APP_ARCH}}.AppImage
       - rm -f {{.APP_NAME}}
       - rm -rf {{.APP_NAME}}.AppDir
     vars:
       APP_NAME: '{{.APP_NAME}}'
       APP_BINARY: '../../../bin/{{.APP_NAME}}'
-      ARCH: '{{.ARCH | default ARCH}}'
     env:
       APP_NAME: '{{.APP_NAME}}'
       APP_BINARY: '../../../bin/{{.APP_NAME}}'
@@ -70,6 +71,9 @@ tasks:
       - task: generate:dotdesktop
     cmds:
       - wails3 tool package -name "{{.PACKAGE_NAME}}" -format deb -config ./build/linux/nfpm/nfpm.yaml -out {{.ROOT_DIR}}/bin
+    env:
+      GOARCH: '{{.APP_ARCH}}'
+      VERSION: '{{.APP_VERSION}}'
 
   create:rpm:
     summary: Creates an RPM package
@@ -80,6 +84,9 @@ tasks:
       - task: generate:dotdesktop
     cmds:
       - wails3 tool package -name "{{.PACKAGE_NAME}}" -format rpm -config ./build/linux/nfpm/nfpm.yaml -out {{.ROOT_DIR}}/bin
+    env:
+      GOARCH: '{{.APP_ARCH}}'
+      VERSION: '{{.APP_VERSION}}'
 
   generate:dotdesktop:
     summary: Generates a `.desktop` file

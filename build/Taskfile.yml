@@ -41,5 +41,9 @@ tasks:
       - '{{.APP_ICON_MAC_OUTPUT}}'
       - '{{.APP_ICON_WINDOWS_OUTPUT}}'
     cmds:
-      - mkdir -p build/darwin build/windows
-      - wails3 generate icons -input {{.APP_ICON_INPUT}} -macfilename {{.APP_ICON_MAC_OUTPUT}} -windowsfilename {{.APP_ICON_WINDOWS_OUTPUT}}
+      - cmd: mkdir -p build/darwin build/windows
+        platforms: [darwin, linux]
+      - cmd: wails3 generate icons -input {{.APP_ICON_INPUT}} -macfilename {{.APP_ICON_MAC_OUTPUT}} -windowsfilename {{.APP_ICON_WINDOWS_OUTPUT}}
+        platforms: [darwin]
+      - cmd: echo "Icons already committed, skipping generation on non-macOS"
+        platforms: [windows, linux]

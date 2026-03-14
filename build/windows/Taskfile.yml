@@ -54,11 +54,12 @@ tasks:
         -DINFO_PROJECTNAME="{{.APP_NAME}}"
         -DINFO_COMPANYNAME="SkillManager"
         -DINFO_PRODUCTNAME="SkillManager"
-        -DINFO_PRODUCTVERSION="1.0.0"
+        -DINFO_PRODUCTVERSION="{{.APP_VERSION}}"
         -DINFO_COPYRIGHT="Copyright (C) 2026 SkillManager"
         -DARG_WAILS_{{.ARG_FLAG}}_BINARY="{{.ROOT_DIR}}/{{.BIN_DIR}}/{{.APP_NAME}}.exe"
         project.nsi
     vars:
+      APP_VERSION: '{{.VERSION | default (env "VERSION") | default "0.0.0"}}'
       ARCH: '{{.ARCH | default ARCH}}'
       ARG_FLAG: '{{if eq .ARCH "amd64"}}AMD64{{else}}ARM64{{end}}'
 

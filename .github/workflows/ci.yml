@@ -17,6 +17,7 @@ concurrency:
 env:
   NODE_VERSION: '20.20.1'
   WAILS_VERSION: 'v3.0.0-alpha.74'
+  TARGET_ARCH: 'amd64'
 
 jobs:
   # Go 后端测试
@@ -104,12 +105,14 @@ jobs:
         run: go install github.com/wailsapp/wails/v3/cmd/wails3@${{ env.WAILS_VERSION }}
 
       - name: Build
+        env:
+          ARCH: ${{ env.TARGET_ARCH }}
         run: wails3 task darwin:build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SkillManager-macos
+          name: SkillManager-macos-${{ env.TARGET_ARCH }}
           path: bin/SkillManager
           retention-days: 7
 
@@ -144,12 +147,14 @@ jobs:
         run: go install github.com/wailsapp/wails/v3/cmd/wails3@${{ env.WAILS_VERSION }}
 
       - name: Build
+        env:
+          ARCH: ${{ env.TARGET_ARCH }}
         run: wails3 task windows:build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SkillManager-windows
+          name: SkillManager-windows-${{ env.TARGET_ARCH }}
           path: bin/SkillManager.exe
           retention-days: 7
 
@@ -189,11 +194,13 @@ jobs:
         run: go install github.com/wailsapp/wails/v3/cmd/wails3@${{ env.WAILS_VERSION }}
 
       - name: Build
+        env:
+          ARCH: ${{ env.TARGET_ARCH }}
         run: wails3 task linux:build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SkillManager-linux
+          name: SkillManager-linux-${{ env.TARGET_ARCH }}
           path: bin/SkillManager
           retention-days: 7
