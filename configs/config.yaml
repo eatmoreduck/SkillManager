@@ -1,0 +1,44 @@
+version: "1.0"
+
+proxy:
+  enabled: false
+  type: "http"
+  host: "127.0.0.1"
+  port: 7890
+  username: ""
+  password: ""
+
+registries:
+  - id: "skills-sh"
+    name: "skills.sh"
+    url: "https://api.skills.sh"
+    isDefault: true
+
+agents:
+  - id: "claude"
+    name: "Claude Code"
+    skillsDir: "~/.claude/skills"
+    binaryName: "claude"
+    priorityPaths:
+      - "~/.claude/skills"
+    isEnabled: true
+    isCustom: false
+
+  - id: "codex"
+    name: "Codex"
+    skillsDir: "~/.codex/skills"
+    binaryName: "codex"
+    priorityPaths:
+      - "~/.codex/skills"
+      - "~/.agents/skills"
+    isEnabled: true
+    isCustom: false
+
+  - id: "gemini"
+    name: "Gemini CLI"
+    skillsDir: "~/.gemini/skills"
+    binaryName: "gemini"
+    priorityPaths:
+      - "~/.gemini/skills"
+    isEnabled: false
+    isCustom: false

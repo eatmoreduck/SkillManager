@@ -1,0 +1,33 @@
+{
+  "name": "skillmanager-frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf dist node_modules/.vite",
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "build:clean": "npm run clean && vue-tsc && vite build --emptyOutDir",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:unit": "vitest run",
+    "lint": "eslint . --ext .vue,.ts"
+  },
+  "dependencies": {
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.0",
+    "pinia": "^2.1.0",
+    "naive-ui": "^2.38.0",
+    "@vicons/ionicons5": "^0.12.0",
+    "marked": "^12.0.0",
+    "highlight.js": "^11.9.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vue-tsc": "^2.0.0",
+    "sass": "^1.72.0",
+    "vitest": "^1.0.0",
+    "@vue/test-utils": "^2.4.0"
+  }
+}

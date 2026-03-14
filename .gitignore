@@ -1,0 +1,72 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# Build output
+bin/
+build/
+dist/
+
+# IDE - IntelliJ / GoLand
+.idea/
+
+# IDE - VSCode
+.vscode/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Wails specific
+wails_build/
+frontend/dist/
+
+# Node modules (frontend)
+frontend/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+#
+docs
+
+# Logs
+*.log
+logs/
+
+# Claude Code specific
+.claude/
+CLAUDE.me
+.tmp_*.go
+# Debug
+debug
+
