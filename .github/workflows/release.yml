@@ -188,8 +188,14 @@ jobs:
           path: release-assets
           merge-multiple: true
 
+      - name: Verify GitHub CLI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh --version
+          gh release view "${{ env.RELEASE_TAG }}" --json tagName,isDraft,isImmutable,url
+
       - name: Upload assets to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: release-assets/*
-          fail_on_unmatched_files: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ env.RELEASE_TAG }}" release-assets/* --clobber
