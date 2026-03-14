@@ -48,7 +48,7 @@ tasks:
       - task: generate:dotdesktop
     cmds:
       - cp {{.APP_BINARY}} {{.APP_NAME}}
-      - cp ../../../frontend/src/assets/logo.png appicon.png
+      - cp ../../../frontend/src/assets/logo.png skillmanager.png
       - bash build.sh
       - mv {{.APP_NAME}}.AppImage ../../../bin/{{.APP_NAME}}-{{.APP_VERSION}}-linux-{{.APP_ARCH}}.AppImage
       - rm -f {{.APP_NAME}}
@@ -60,7 +60,8 @@ tasks:
       APP_NAME: '{{.APP_NAME}}'
       APP_BINARY: '../../../bin/{{.APP_NAME}}'
       DESKTOP_FILE: '../{{.APP_NAME}}.desktop'
-      ICON_PATH: 'appicon.png'
+      ICON_PATH: 'skillmanager.png'
+      LINUXDEPLOY_OUTPUT_VERSION: '{{.APP_VERSION}}'
 
   create:deb:
     summary: Creates a Debian package
@@ -97,7 +98,7 @@ tasks:
     vars:
       EXEC: '{{.APP_NAME}}'
       ICON: 'skillmanager'
-      CATEGORIES: 'Development;Utility;'
+      CATEGORIES: 'Utility;'
 
   run:
     cmds:

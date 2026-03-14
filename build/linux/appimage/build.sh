@@ -11,9 +11,13 @@ LINUXDEPLOY_VERSION="1-alpha-20251107-1"
 
 # Create AppDir structure
 mkdir -p "${APP_DIR}/usr/bin"
+mkdir -p "${APP_DIR}/usr/share/applications"
+mkdir -p "${APP_DIR}/usr/share/icons/hicolor/1024x1024/apps"
 cp -r "${APP_BINARY}" "${APP_DIR}/usr/bin/"
 cp "${ICON_PATH}" "${APP_DIR}/"
 cp "${DESKTOP_FILE}" "${APP_DIR}/"
+cp "${DESKTOP_FILE}" "${APP_DIR}/usr/share/applications/$(basename "${DESKTOP_FILE}")"
+cp "${ICON_PATH}" "${APP_DIR}/usr/share/icons/hicolor/1024x1024/apps/$(basename "${ICON_PATH}")"
 
 if [[ $(uname -m) == *x86_64* ]]; then
     # Download linuxdeploy and make it executable
