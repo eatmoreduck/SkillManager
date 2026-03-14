@@ -1,0 +1,19 @@
+name: "skillmanager"
+arch: ${GOARCH}
+platform: "linux"
+version: "1.0.0"
+section: "default"
+priority: "extra"
+maintainer: "eatmoreduck <eatmoreduck66@gmail.com>"
+description: "Cross-platform AI Agent Skills Manager"
+vendor: "SkillManager"
+license: "Proprietary"
+release: "1"
+
+contents:
+  - src: "./bin/SkillManager"
+    dst: "/usr/local/bin/SkillManager"
+  - src: "./frontend/src/assets/logo.png"
+    dst: "/usr/share/icons/hicolor/1024x1024/apps/skillmanager.png"
+  - src: "./build/linux/SkillManager.desktop"
+    dst: "/usr/share/applications/SkillManager.desktop"

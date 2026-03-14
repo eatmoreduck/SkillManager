@@ -1,0 +1,45 @@
+version: '3'
+
+vars:
+  APP_ICON_INPUT: './frontend/src/assets/logo.png'
+  APP_ICON_MAC_OUTPUT: 'build/darwin/icons.icns'
+  APP_ICON_WINDOWS_OUTPUT: 'build/windows/icon.ico'
+
+tasks:
+  go:mod:tidy:
+    summary: Runs `go mod tidy`
+    internal: true
+    cmds:
+      - go mod tidy
+
+  install:frontend:deps:
+    summary: Install frontend dependencies
+    dir: frontend
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/**/*
+    cmds:
+      - npm ci
+
+  build:frontend:
+    summary: Builds the frontend project
+    dir: frontend
+    deps:
+      - task: install:frontend:deps
+    cmds:
+      - npm run {{.BUILD_COMMAND}}
+    vars:
+      BUILD_COMMAND: '{{if eq .PRODUCTION "true"}}build:clean{{else}}build{{end}}'
+
+  generate:icons:
+    summary: Generates macOS `.icns` and Windows `.ico` files from the app logo
+    sources:
+      - '{{.APP_ICON_INPUT}}'
+    generates:
+      - '{{.APP_ICON_MAC_OUTPUT}}'
+      - '{{.APP_ICON_WINDOWS_OUTPUT}}'
+    cmds:
+      - mkdir -p build/darwin build/windows
+      - wails3 generate icons -input {{.APP_ICON_INPUT}} -macfilename {{.APP_ICON_MAC_OUTPUT}} -windowsfilename {{.APP_ICON_WINDOWS_OUTPUT}}

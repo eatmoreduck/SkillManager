@@ -1,0 +1,75 @@
+version: '3'
+
+includes:
+  common: ../Taskfile.yml
+
+vars:
+  APP_ICON_OUTPUT: 'build/darwin/icons.icns'
+  MACOS_DEPLOYMENT_TARGET: '11.0'
+  MACOS_SDK:
+    sh: xcrun --show-sdk-path
+  CGO_MIN_VERSION_FLAG: '-mmacosx-version-min={{.MACOS_DEPLOYMENT_TARGET}}'
+  CGO_SYSROOT_FLAG: '-isysroot {{.MACOS_SDK}}'
+  CGO_COMMON_FLAGS: '{{.CGO_SYSROOT_FLAG}} {{.CGO_MIN_VERSION_FLAG}}'
+
+
+tasks:
+  build:
+    summary: Creates a clean production build of the application
+    deps:
+      - task: common:go:mod:tidy
+      - task: common:build:frontend
+        vars:
+          PRODUCTION: 'true'
+      - task: common:generate:icons
+    cmds:
+      - cmd: |
+          env \
+            SDKROOT="{{.MACOS_SDK}}" \
+            MACOSX_DEPLOYMENT_TARGET="{{.MACOS_DEPLOYMENT_TARGET}}" \
+            CGO_CFLAGS="-O2 -g {{.CGO_COMMON_FLAGS}}" \
+            CGO_CXXFLAGS="-O2 -g {{.CGO_COMMON_FLAGS}}" \
+            CGO_LDFLAGS="-O2 -g {{.CGO_COMMON_FLAGS}}" \
+            go build -a -tags wails -o {{.OUTPUT}}
+    vars:
+      DEFAULT_OUTPUT: '{{.BIN_DIR}}/{{.APP_NAME}}'
+      OUTPUT: '{{ .OUTPUT | default .DEFAULT_OUTPUT }}'
+
+  package:
+    summary: Packages the application into a macOS .app bundle
+    deps:
+      - task: build
+    cmds:
+      - task: create:app:bundle
+      - task: create:dmg
+
+  create:app:bundle:
+    summary: Creates the macOS .app bundle
+    cmds:
+      - cmd: mkdir -p {{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/{MacOS,Resources}
+      - cmd: cp {{.APP_ICON_OUTPUT}} {{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Resources
+      - cmd: cp {{.BIN_DIR}}/{{.APP_NAME}} {{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/MacOS
+      - cmd: cp build/darwin/Info.plist {{.BIN_DIR}}/{{.APP_NAME}}.app/Contents/Info.plist
+      - cmd: codesign --force --deep --sign - {{.BIN_DIR}}/{{.APP_NAME}}.app
+
+  create:dmg:
+    summary: Creates a DMG containing the .app and Applications shortcut
+    cmds:
+      - cmd: |
+          TMP_DIR="$(mktemp -d)"
+          trap 'rm -rf "$TMP_DIR"' EXIT
+          cp -R "{{.BIN_DIR}}/{{.APP_NAME}}.app" "$TMP_DIR/"
+          ln -s /Applications "$TMP_DIR/Applications"
+          hdiutil create -volname "{{.APP_NAME}}" -srcfolder "$TMP_DIR" -ov -format UDZO "{{.BIN_DIR}}/{{.APP_NAME}}.dmg"
+
+  run:
+    summary: Runs the application from a temporary macOS .app bundle
+    deps:
+      - task: build
+    cmds:
+      - cmd: mkdir -p {{.BIN_DIR}}/{{.APP_NAME}}.dev.app/Contents/{MacOS,Resources}
+      - cmd: cp {{.APP_ICON_OUTPUT}} {{.BIN_DIR}}/{{.APP_NAME}}.dev.app/Contents/Resources
+      - cmd: cp {{.BIN_DIR}}/{{.APP_NAME}} {{.BIN_DIR}}/{{.APP_NAME}}.dev.app/Contents/MacOS
+      - cmd: cp build/darwin/Info.dev.plist {{.BIN_DIR}}/{{.APP_NAME}}.dev.app/Contents/Info.plist
+      - cmd: codesign --force --deep --sign - {{.BIN_DIR}}/{{.APP_NAME}}.dev.app
+      - cmd: '{{.BIN_DIR}}/{{.APP_NAME}}.dev.app/Contents/MacOS/{{.APP_NAME}}'

@@ -19,7 +19,6 @@ vendor/
 
 # Build output
 bin/
-build/
 dist/
 
 # IDE - IntelliJ / GoLand
