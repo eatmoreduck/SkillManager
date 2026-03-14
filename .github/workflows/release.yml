@@ -3,6 +3,12 @@ name: Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing release tag to build and upload assets to, for example v0.0.1
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -15,12 +21,16 @@ env:
   NODE_VERSION: '20.20.1'
   WAILS_VERSION: 'v3.0.0-alpha.74'
   TARGET_ARCH: 'amd64'
-  RELEASE_TAG: ${{ github.event.release.tag_name }}
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.event.release.tag_name }}
 
 jobs:
   release-macos:
-    name: Release macOS
+    name: Release macOS (${{ matrix.arch }})
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,14 +61,14 @@ jobs:
 
       - name: Build and Package
         env:
-          ARCH: ${{ env.TARGET_ARCH }}
+          ARCH: ${{ matrix.arch }}
         run: wails3 task darwin:package
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-macos
-          path: bin/SkillManager-*-macos-${{ env.TARGET_ARCH }}.dmg
+          name: release-macos-${{ matrix.arch }}
+          path: bin/SkillManager-*-macos-${{ matrix.arch }}.dmg
           if-no-files-found: error
 
   release-windows:

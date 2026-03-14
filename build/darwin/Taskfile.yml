@@ -26,6 +26,9 @@ tasks:
           CGO_SYSROOT_FLAG="-isysroot ${MACOS_SDK}"
           CGO_COMMON_FLAGS="${CGO_SYSROOT_FLAG} ${CGO_MIN_VERSION_FLAG}"
           env \
+            GOOS="darwin" \
+            GOARCH="{{.APP_ARCH}}" \
+            CGO_ENABLED="1" \
             SDKROOT="${MACOS_SDK}" \
             MACOSX_DEPLOYMENT_TARGET="{{.MACOS_DEPLOYMENT_TARGET}}" \
             CGO_CFLAGS="-O2 -g ${CGO_COMMON_FLAGS}" \

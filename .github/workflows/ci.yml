@@ -76,10 +76,14 @@ jobs:
 
   # macOS 构建
   build-macos:
-    name: Build macOS
+    name: Build macOS (${{ matrix.arch }})
     needs: [backend, frontend]
     runs-on: macos-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -106,13 +110,13 @@ jobs:
 
       - name: Build
         env:
-          ARCH: ${{ env.TARGET_ARCH }}
+          ARCH: ${{ matrix.arch }}
         run: wails3 task darwin:build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SkillManager-macos-${{ env.TARGET_ARCH }}
+          name: SkillManager-macos-${{ matrix.arch }}
           path: bin/SkillManager
           retention-days: 7
 
