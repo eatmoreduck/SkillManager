@@ -193,9 +193,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh --version
-          gh release view "${{ env.RELEASE_TAG }}" --json tagName,isDraft,isImmutable,url
+          gh release view "${{ env.RELEASE_TAG }}" --repo "${{ github.repository }}" --json tagName,isDraft,isImmutable,url
 
       - name: Upload assets to GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ env.RELEASE_TAG }}" release-assets/* --clobber
+        run: gh release upload "${{ env.RELEASE_TAG }}" release-assets/* --repo "${{ github.repository }}" --clobber
