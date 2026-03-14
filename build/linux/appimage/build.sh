@@ -35,5 +35,10 @@ else
     ./linuxdeploy-aarch64.AppImage --appdir "${APP_DIR}" --output appimage
 fi
 
-# Rename the generated AppImage
-mv "${APP_NAME}"*.AppImage "${APP_NAME}.AppImage"
+# Rename the generated AppImage regardless of the basename linuxdeploy chose
+APPIMAGE_FILE="$(find . -maxdepth 1 -type f -name '*.AppImage' | head -n 1)"
+if [[ -z "${APPIMAGE_FILE}" ]]; then
+    echo "No AppImage file was generated" >&2
+    exit 1
+fi
+mv "${APPIMAGE_FILE}" "${APP_NAME}.AppImage"
