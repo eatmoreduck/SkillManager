@@ -36,11 +36,28 @@ export const useConfigStore = defineStore('config', () => {
     }
   }
 
+  async function updateLanguage(language: string) {
+    loading.value = true
+    error.value = null
+    try {
+      await window.go.main.App.ConfigBinding.UpdateLanguage(language)
+      if (config.value) {
+        config.value.language = language
+      }
+    } catch (e) {
+      error.value = (e as Error).message
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     config,
     loading,
     error,
     loadConfig,
-    updateProxy
+    updateProxy,
+    updateLanguage
   }
 })

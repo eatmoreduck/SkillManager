@@ -5,6 +5,7 @@ import "fmt"
 // Config stores persisted application settings.
 type Config struct {
 	Version    string        `yaml:"version" json:"version"`
+	Language   string        `yaml:"language" json:"language"`
 	Proxy      ProxyConfig   `yaml:"proxy" json:"proxy"`
 	Registries []Registry    `yaml:"registries" json:"registries"`
 	Agents     []AgentConfig `yaml:"agents" json:"agents"`

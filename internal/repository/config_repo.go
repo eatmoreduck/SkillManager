@@ -94,7 +94,8 @@ func (r *FileConfigRepository) GetConfigPath() string {
 
 func defaultConfig() *model.Config {
 	return &model.Config{
-		Version: "1.0",
+		Version:  "1.0",
+		Language: "zh-CN",
 		Proxy: model.ProxyConfig{
 			Enabled: false,
 			Type:    "http",
@@ -160,6 +161,10 @@ func migrateConfigIfNeeded(cfg *model.Config) bool {
 
 	if cfg.Version == "" {
 		cfg.Version = defaultCfg.Version
+		changed = true
+	}
+	if cfg.Language == "" {
+		cfg.Language = defaultCfg.Language
 		changed = true
 	}
 

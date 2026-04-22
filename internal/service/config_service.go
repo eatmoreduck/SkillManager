@@ -32,6 +32,15 @@ func (s *ConfigService) UpdateProxy(proxy model.ProxyConfig) error {
 	return s.configRepo.SaveConfig(cfg)
 }
 
+func (s *ConfigService) UpdateLanguage(language string) error {
+	cfg, err := s.configRepo.LoadConfig()
+	if err != nil {
+		return err
+	}
+	cfg.Language = language
+	return s.configRepo.SaveConfig(cfg)
+}
+
 func (s *ConfigService) GetHTTPClient() *http.Client {
 	cfg, err := s.configRepo.LoadConfig()
 	if err != nil {

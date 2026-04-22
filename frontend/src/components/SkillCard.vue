@@ -1,29 +1,40 @@
 <template>
-  <n-card
-    class="skill-card"
-    hoverable
+  <article
+    class="apple-card skill-card"
     @click="$emit('click')"
   >
-    <template #header>
+    <div class="card-topbar">
       <div class="card-header">
-        <span class="skill-name">{{ skill.name }}</span>
+        <div class="skill-avatar">{{ skillInitial }}</div>
+        <div class="card-copy">
+          <span class="skill-overline">{{ skill.author || t('common.author') }}</span>
+          <span class="skill-name">{{ displayName }}</span>
+        </div>
         <n-tag v-if="skill.version" size="small" type="info">v{{ skill.version }}</n-tag>
       </div>
-    </template>
-
-    <template #header-extra>
       <n-dropdown
         trigger="click"
         :options="dropdownOptions"
         @select="handleDropdownSelect"
       >
-        <n-button text @click.stop>
+        <n-button text class="card-menu-button" @click.stop>
           <template #icon><n-icon><EllipsisVertical /></n-icon></template>
         </n-button>
       </n-dropdown>
-    </template>
+    </div>
 
     <div class="skill-description">{{ skill.description }}</div>
+
+    <div class="skill-metrics">
+      <span class="metric-pill">
+        <strong>{{ skillAgents.length }}</strong>
+        {{ t('skills.statsAgents') }}
+      </span>
+      <span class="metric-pill">
+        <strong>{{ skillTags(skill).length }}</strong>
+        {{ t('skills.statsTags') }}
+      </span>
+    </div>
 
     <div class="skill-tags">
       <n-tag
@@ -39,32 +50,31 @@
       </n-tag>
     </div>
 
-    <template #footer>
-      <div class="skill-meta">
-        <span class="install-time">{{ formatInstallTime(skill.installedAt) }}</span>
-        <div class="agent-icons" v-if="skillAgents.length > 0">
-          <div
-            v-for="agent in skillAgents.slice(0, 4)"
-            :key="agent.id"
-            class="agent-icon"
-            :title="agent.name"
-            v-html="getAgentIcon(agent.id)"
-          />
-          <div v-if="skillAgents.length > 4" class="agent-more">
-            +{{ skillAgents.length - 4 }}
-          </div>
+    <div class="skill-meta">
+      <span class="install-time">{{ installTimeText }}</span>
+      <div class="agent-icons" v-if="skillAgents.length > 0">
+        <div
+          v-for="agent in skillAgents.slice(0, 4)"
+          :key="agent.id"
+          class="agent-icon"
+          :title="agent.name"
+          v-html="getAgentIcon(agent.id)"
+        />
+        <div v-if="skillAgents.length > 4" class="agent-more">
+          +{{ skillAgents.length - 4 }}
         </div>
       </div>
-    </template>
-  </n-card>
+    </div>
+  </article>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { NCard, NTag, NButton, NIcon, NDropdown } from 'naive-ui'
+import { NTag, NButton, NIcon, NDropdown } from 'naive-ui'
 import { EllipsisVertical } from '@vicons/ionicons5'
 import type { Skill, Agent } from '@/types'
 import { useAgentStore } from '@/stores/agentStore'
+import { formatRelativeTime, useI18n } from '@/i18n'
 
 const props = defineProps<{
   skill: Skill
@@ -76,11 +86,12 @@ const emit = defineEmits<{
 }>()
 
 const agentStore = useAgentStore()
+const { t } = useI18n()
 
-const dropdownOptions = [
-  { label: '查看详情', key: 'detail' },
-  { label: '卸载', key: 'uninstall' }
-]
+const dropdownOptions = computed(() => [
+  { label: t('common.viewDetails'), key: 'detail' },
+  { label: t('common.uninstall'), key: 'uninstall' }
+])
 
 const fallbackAgentIcon = `
 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -102,29 +113,26 @@ const agentIcons = Object.fromEntries(
   })
 ) as Record<string, string>
 
+const displayName = computed(() => {
+  const name = typeof props.skill.name === 'string' ? props.skill.name.trim() : ''
+  if (name) return name
+  const id = typeof props.skill.id === 'string' ? props.skill.id.trim() : ''
+  return id || 'Untitled Skill'
+})
+
+const skillInitial = computed(() => {
+  return displayName.value.slice(0, 1).toUpperCase()
+})
+
 function getAgentIcon(agentId: string): string {
   return agentIcons[agentId] || fallbackAgentIcon
 }
 
-function formatInstallTime(time: string): string {
-  if (!time) return ''
-  try {
-    const date = new Date(time)
-    const now = new Date()
-    const diff = now.getTime() - date.getTime()
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+const installTimeText = computed(() => {
+  const relativeTime = formatRelativeTime(props.skill.installedAt)
+  return relativeTime ? t('skills.installedRelative', { time: relativeTime }) : ''
+})
 
-    if (days === 0) return '今天安装'
-    if (days === 1) return '昨天安装'
-    if (days < 7) return `${days} 天前安装`
-    if (days < 30) return `${Math.floor(days / 7)} 周前安装`
-    return `${Math.floor(days / 30)} 个月前安装`
-  } catch {
-    return ''
-  }
-}
-
-// 获取使用该 skill 的 agent 列表
 const skillAgents = computed(() => {
   if (!Array.isArray(props.skill.agents)) return []
   return props.skill.agents
@@ -148,62 +156,139 @@ function handleDropdownSelect(key: string) {
 <style scoped>
 .skill-card {
   cursor: pointer;
-  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 218px;
+  padding: 20px 22px 18px;
 }
 
-.skill-card:hover {
-  transform: translateY(-2px);
+.card-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.skill-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, rgba(93, 161, 255, 0.34), rgba(131, 226, 186, 0.24));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.card-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.skill-overline {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
 }
 
 .skill-name {
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.card-menu-button {
+  border-radius: 999px;
 }
 
 .skill-description {
-  color: var(--n-text-color-2);
-  font-size: 13px;
-  line-height: 1.5;
-  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 14px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.skill-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.metric-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.metric-pill strong {
+  color: var(--text-primary);
 }
 
 .skill-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 8px;
 }
 
 .skill-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   font-size: 12px;
-  color: var(--n-text-color-3);
+  color: var(--text-tertiary);
+  margin-top: auto;
+}
+
+.install-time {
+  line-height: 1.5;
 }
 
 .agent-icons {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .agent-icon {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .agent-icon :deep(svg) {
@@ -213,7 +298,7 @@ function handleDropdownSelect(key: string) {
 
 .agent-more {
   font-size: 11px;
-  color: var(--n-text-color-3);
+  color: var(--text-secondary);
   margin-left: 2px;
 }
 </style>

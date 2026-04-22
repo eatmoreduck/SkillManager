@@ -10,6 +10,6 @@ export default defineConfig({
     }
   },
   server: {
-    port: 5173
+    port: parseInt(process.env.WAILS_VITE_PORT || '5173')
   }
 })

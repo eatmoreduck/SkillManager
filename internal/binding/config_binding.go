@@ -30,6 +30,10 @@ func (b *ConfigBinding) UpdateProxy(proxy model.ProxyConfig) error {
 	return b.service.UpdateProxy(proxy)
 }
 
+func (b *ConfigBinding) UpdateLanguage(language string) error {
+	return b.service.UpdateLanguage(language)
+}
+
 func (b *ConfigBinding) GetProxy() (*ProxyConfigResponse, error) {
 	config, err := b.service.GetConfig()
 	if err != nil {

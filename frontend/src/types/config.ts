@@ -30,6 +30,7 @@ export interface Registry {
 // 应用配置
 export interface Config {
   version: string
+  language: string
   proxy: ProxyConfig
   registries: Registry[]
   agents: AgentConfig[]

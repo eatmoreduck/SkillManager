@@ -55,9 +55,6 @@ frontend/node_modules/
 .env.local
 .env.*.local
 
-#
-docs
-
 # Logs
 *.log
 logs/
@@ -68,4 +65,7 @@ CLAUDE.me
 .tmp_*.go
 # Debug
 debug
+.playwright-cli
 
+# Task runner cache
+.task/

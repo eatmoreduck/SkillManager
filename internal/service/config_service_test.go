@@ -58,3 +58,23 @@ func TestConfigServiceGetHTTPClient(t *testing.T) {
 		t.Fatalf("GetHTTPClient() transport = %T, want *http.Transport", client.Transport)
 	}
 }
+
+func TestConfigServiceUpdateLanguage(t *testing.T) {
+	t.Parallel()
+
+	repo := &mockConfigRepository{
+		config: &model.Config{
+			Version:  "1.0",
+			Language: "zh-CN",
+		},
+	}
+	svc := NewConfigService(repo)
+
+	if err := svc.UpdateLanguage("en-US"); err != nil {
+		t.Fatalf("UpdateLanguage() error = %v", err)
+	}
+
+	if repo.config.Language != "en-US" {
+		t.Fatalf("UpdateLanguage() language = %q, want %q", repo.config.Language, "en-US")
+	}
+}

@@ -12,4 +12,5 @@ export interface Skill {
   sourceUrl: string
   installedAt: string
   updatedAt: string
+  isManaged?: boolean
 }

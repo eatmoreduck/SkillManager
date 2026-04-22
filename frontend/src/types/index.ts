@@ -40,6 +40,7 @@ declare global {
           ConfigBinding: {
             GetConfig: () => Promise<Config>
             UpdateProxy: (proxy: ProxyConfig) => Promise<void>
+            UpdateLanguage: (language: string) => Promise<void>
           }
         }
       }

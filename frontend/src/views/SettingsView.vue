@@ -1,98 +1,140 @@
 <template>
-  <div class="settings-view">
-    <!-- 代理设置区域 -->
-    <n-card title="代理设置" class="settings-card">
-      <n-form
-        ref="proxyFormRef"
-        :model="proxyForm"
-        label-placement="left"
-        label-width="100"
-      >
-        <n-form-item label="启用代理">
-          <n-switch v-model:value="proxyForm.enabled" />
-        </n-form-item>
-
-        <n-form-item label="代理类型">
-          <n-select
-            v-model:value="proxyForm.type"
-            :options="proxyTypeOptions"
-            :disabled="!proxyForm.enabled"
-            style="width: 200px"
-          />
-        </n-form-item>
-
-        <n-form-item label="主机">
-          <n-input
-            v-model:value="proxyForm.host"
-            placeholder="127.0.0.1"
-            :disabled="!proxyForm.enabled"
-            style="width: 300px"
-          />
-        </n-form-item>
-
-        <n-form-item label="端口">
-          <n-input-number
-            v-model:value="proxyForm.port"
-            :min="1"
-            :max="65535"
-            placeholder="7890"
-            :disabled="!proxyForm.enabled"
-            style="width: 150px"
-          />
-        </n-form-item>
-
-        <n-form-item label="用户名">
-          <n-input
-            v-model:value="proxyForm.username"
-            placeholder="可选"
-            :disabled="!proxyForm.enabled"
-            style="width: 300px"
-          />
-        </n-form-item>
-
-        <n-form-item label="密码">
-          <n-input
-            v-model:value="proxyForm.password"
-            type="password"
-            placeholder="可选"
-            :disabled="!proxyForm.enabled"
-            show-password-on="click"
-            style="width: 300px"
-          />
-        </n-form-item>
-      </n-form>
-    </n-card>
-
-    <!-- Registry 管理区域 -->
-    <n-card title="Registry 管理" class="settings-card">
-      <template #header-extra>
-        <n-button type="primary" size="small" @click="showAddRegistryModal = true">
-          <template #icon><n-icon><AddOutline /></n-icon></template>
-          添加 Registry
-        </n-button>
-      </template>
-
-      <!-- 加载状态 -->
-      <div v-if="registryStore.loading" class="loading-container">
-        <n-spin size="medium" description="加载中..." />
+  <div class="page-shell settings-view">
+    <section class="page-hero">
+      <div class="hero-copy">
+        <p class="hero-kicker">{{ t('settings.heroKicker') }}</p>
+        <h2 class="hero-title">{{ t('settings.title') }}</h2>
+        <p class="hero-subtitle">{{ t('settings.heroSubtitle') }}</p>
       </div>
 
-      <!-- 空状态 -->
-      <n-empty
-        v-else-if="registryStore.registries.length === 0"
-        description="暂无配置的 Registry"
-      />
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ registryStore.registries.length }}</span>
+          <span class="hero-stat-label">{{ t('settings.statsRegistries') }}</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{{ proxyForm.enabled ? t('common.enabled') : t('common.disabled') }}</span>
+          <span class="hero-stat-label">{{ t('settings.statsProxy') }}</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-value hero-stat-value-text">{{ currentLanguageLabel }}</span>
+          <span class="hero-stat-label">{{ t('settings.statsLanguage') }}</span>
+        </div>
+      </div>
+    </section>
 
-      <!-- Registry 列表 -->
-      <n-list v-else bordered>
-        <n-list-item v-for="registry in registryStore.registries" :key="registry.id">
-          <template #prefix>
-            <n-tag v-if="registry.isDefault" type="success" size="small">
-              默认
-            </n-tag>
-          </template>
-          <n-thing :title="registry.name" :description="registry.url" />
-          <template #suffix>
+    <div class="settings-grid">
+      <n-card class="apple-card settings-card">
+        <template #header>
+          <div class="settings-card-head">
+            <div>
+              <h3 class="section-title">{{ t('settings.proxySettings') }}</h3>
+              <p class="section-subtitle">{{ t('settings.proxyHint') }}</p>
+            </div>
+          </div>
+        </template>
+
+        <n-form
+          ref="proxyFormRef"
+          :model="proxyForm"
+          label-placement="left"
+          label-width="112"
+          class="settings-form"
+        >
+          <n-form-item :label="t('settings.enableProxy')">
+            <n-switch v-model:value="proxyForm.enabled" />
+          </n-form-item>
+
+          <n-form-item :label="t('settings.proxyType')">
+            <n-select
+              v-model:value="proxyForm.type"
+              :options="proxyTypeOptions"
+              :disabled="!proxyForm.enabled"
+              style="width: 220px"
+            />
+          </n-form-item>
+
+          <n-form-item :label="t('common.language')">
+            <n-select
+              v-model:value="selectedLanguage"
+              :options="languageOptions"
+              style="width: 240px"
+            />
+          </n-form-item>
+
+          <n-form-item :label="t('settings.host')">
+            <n-input
+              v-model:value="proxyForm.host"
+              placeholder="127.0.0.1"
+              :disabled="!proxyForm.enabled"
+            />
+          </n-form-item>
+
+          <n-form-item :label="t('settings.port')">
+            <n-input-number
+              v-model:value="proxyForm.port"
+              :min="1"
+              :max="65535"
+              placeholder="7890"
+              :disabled="!proxyForm.enabled"
+              style="width: 180px"
+            />
+          </n-form-item>
+
+          <n-form-item :label="t('settings.username')">
+            <n-input
+              v-model:value="proxyForm.username"
+              :placeholder="t('settings.optional')"
+              :disabled="!proxyForm.enabled"
+            />
+          </n-form-item>
+
+          <n-form-item :label="t('settings.password')">
+            <n-input
+              v-model:value="proxyForm.password"
+              type="password"
+              :placeholder="t('settings.optional')"
+              :disabled="!proxyForm.enabled"
+              show-password-on="click"
+            />
+          </n-form-item>
+        </n-form>
+      </n-card>
+
+      <n-card class="apple-card settings-card">
+        <template #header>
+          <div class="settings-card-head">
+            <div>
+              <h3 class="section-title">{{ t('settings.registryManagement') }}</h3>
+              <p class="section-subtitle">{{ t('settings.registryHint') }}</p>
+            </div>
+            <n-button type="primary" size="small" @click="showAddRegistryModal = true">
+              <template #icon><n-icon><AddOutline /></n-icon></template>
+              {{ t('settings.addRegistry') }}
+            </n-button>
+          </div>
+        </template>
+
+        <div v-if="registryStore.loading" class="settings-loading">
+          <n-spin size="medium" :description="t('common.loading')" />
+        </div>
+
+        <n-empty
+          v-else-if="registryStore.registries.length === 0"
+          :description="t('settings.noRegistries')"
+        />
+
+        <div v-else class="registry-stack">
+          <div v-for="registry in registryStore.registries" :key="registry.id" class="registry-row">
+            <div class="registry-copy">
+              <div class="registry-name-row">
+                <span class="registry-name">{{ registry.name }}</span>
+                <n-tag v-if="registry.isDefault" type="success" size="small">
+                  {{ t('common.default') }}
+                </n-tag>
+              </div>
+              <span class="registry-url">{{ registry.url }}</span>
+            </div>
             <n-button
               quaternary
               type="error"
@@ -102,13 +144,16 @@
             >
               <template #icon><n-icon><TrashOutline /></n-icon></template>
             </n-button>
-          </template>
-        </n-list-item>
-      </n-list>
-    </n-card>
+          </div>
+        </div>
+      </n-card>
+    </div>
 
-    <!-- 保存按钮 -->
-    <div class="action-bar">
+    <section class="glass-panel action-bar">
+      <div class="action-copy">
+        <h3 class="section-title">{{ t('settings.saveSettings') }}</h3>
+        <p class="section-subtitle">{{ t('settings.saveHint') }}</p>
+      </div>
       <n-button
         type="primary"
         size="large"
@@ -117,32 +162,31 @@
         @click="handleSave"
       >
         <template #icon><n-icon><SaveOutline /></n-icon></template>
-        保存设置
+        {{ t('settings.saveSettings') }}
       </n-button>
-    </div>
+    </section>
 
-    <!-- 添加 Registry 弹窗 -->
     <n-modal
       v-model:show="showAddRegistryModal"
       preset="dialog"
-      title="添加 Registry"
-      positive-text="添加"
-      negative-text="取消"
+      :title="t('settings.addRegistryTitle')"
+      :positive-text="t('common.add')"
+      :negative-text="t('common.cancel')"
       :positive-button-props="{ disabled: !newRegistryName || !newRegistryUrl }"
       :loading="addingRegistry"
       @positive-click="handleAddRegistry"
     >
       <n-form label-placement="left" label-width="80">
-        <n-form-item label="名称">
+        <n-form-item :label="t('common.name')">
           <n-input
             v-model:value="newRegistryName"
-            placeholder="例如: Official Registry"
+            :placeholder="t('settings.officialRegistryExample')"
           />
         </n-form-item>
         <n-form-item label="URL">
           <n-input
             v-model:value="newRegistryUrl"
-            placeholder="例如: https://registry.example.com"
+            :placeholder="t('settings.registryUrlExample')"
           />
         </n-form-item>
       </n-form>
@@ -164,9 +208,6 @@ import {
   NIcon,
   NSpin,
   NEmpty,
-  NList,
-  NListItem,
-  NThing,
   NTag,
   NModal,
   useMessage,
@@ -176,14 +217,15 @@ import { AddOutline, TrashOutline, SaveOutline } from '@vicons/ionicons5'
 import { useConfigStore } from '@/stores/configStore'
 import { useRegistryStore } from '@/stores/registryStore'
 import type { ProxyConfig } from '@/types'
+import { languageOptions, normalizeLocale, setLocale, useI18n } from '@/i18n'
 
 const message = useMessage()
 const dialog = useDialog()
+const { t } = useI18n()
 
 const configStore = useConfigStore()
 const registryStore = useRegistryStore()
 
-// 代理表单
 const proxyFormRef = ref()
 const proxyForm = ref<ProxyConfig>({
   enabled: false,
@@ -194,7 +236,6 @@ const proxyForm = ref<ProxyConfig>({
   password: ''
 })
 
-// 原始代理配置（用于检测变更）
 const originalProxy = ref<ProxyConfig>({
   enabled: false,
   type: 'http',
@@ -204,28 +245,29 @@ const originalProxy = ref<ProxyConfig>({
   password: ''
 })
 
-// 代理类型选项
 const proxyTypeOptions = [
   { label: 'HTTP', value: 'http' },
   { label: 'HTTPS', value: 'https' },
   { label: 'SOCKS5', value: 'socks5' }
 ]
 
-// 添加 Registry 相关
+const selectedLanguage = ref('zh-CN')
+const originalLanguage = ref('zh-CN')
 const showAddRegistryModal = ref(false)
 const newRegistryName = ref('')
 const newRegistryUrl = ref('')
 const addingRegistry = ref(false)
-
-// 保存状态
 const saving = ref(false)
 
-// 检测是否有变更
 const hasChanges = computed(() => {
-  return JSON.stringify(proxyForm.value) !== JSON.stringify(originalProxy.value)
+  return JSON.stringify(proxyForm.value) !== JSON.stringify(originalProxy.value) ||
+    selectedLanguage.value !== originalLanguage.value
 })
 
-// 加载配置
+const currentLanguageLabel = computed(() => {
+  return languageOptions.find(option => option.value === selectedLanguage.value)?.label || selectedLanguage.value
+})
+
 async function loadSettings() {
   try {
     await configStore.loadConfig()
@@ -233,27 +275,34 @@ async function loadSettings() {
       proxyForm.value = { ...configStore.config.proxy }
       originalProxy.value = { ...configStore.config.proxy }
     }
+    selectedLanguage.value = normalizeLocale(configStore.config?.language)
+    originalLanguage.value = selectedLanguage.value
     await registryStore.loadRegistries()
   } catch (error) {
-    message.error('加载配置失败: ' + (error as Error).message)
+    message.error(t('settings.loadFailed', { error: (error as Error).message }))
   }
 }
 
-// 保存设置
 async function handleSave() {
   saving.value = true
   try {
-    await configStore.updateProxy(proxyForm.value)
-    originalProxy.value = { ...proxyForm.value }
-    message.success('保存成功')
+    if (JSON.stringify(proxyForm.value) !== JSON.stringify(originalProxy.value)) {
+      await configStore.updateProxy(proxyForm.value)
+      originalProxy.value = { ...proxyForm.value }
+    }
+    if (selectedLanguage.value !== originalLanguage.value) {
+      await configStore.updateLanguage(selectedLanguage.value)
+      originalLanguage.value = selectedLanguage.value
+      setLocale(selectedLanguage.value)
+    }
+    message.success(t('common.saveSuccess'))
   } catch (error) {
-    message.error('保存失败: ' + (error as Error).message)
+    message.error(t('common.saveFailed', { error: (error as Error).message }))
   } finally {
     saving.value = false
   }
 }
 
-// 添加 Registry
 async function handleAddRegistry() {
   if (!newRegistryName.value || !newRegistryUrl.value) return
 
@@ -265,36 +314,35 @@ async function handleAddRegistry() {
       url: newRegistryUrl.value,
       isDefault: false
     })
-    message.success('添加成功')
+    message.success(t('common.addSuccess'))
     showAddRegistryModal.value = false
     newRegistryName.value = ''
     newRegistryUrl.value = ''
   } catch (error) {
-    message.error('添加失败: ' + (error as Error).message)
+    message.error(t('common.addFailed', { error: (error as Error).message }))
   } finally {
     addingRegistry.value = false
   }
 }
 
-// 删除 Registry
 function handleRemoveRegistry(id: string) {
   const registry = registryStore.registries.find(r => r.id === id)
   if (registry?.isDefault) {
-    message.warning('无法删除默认 Registry')
+    message.warning(t('settings.cannotRemoveDefaultRegistry'))
     return
   }
 
   dialog.warning({
-    title: '确认删除',
-    content: `确定要删除 Registry "${registry?.name}" 吗？`,
-    positiveText: '删除',
-    negativeText: '取消',
+    title: t('settings.confirmDeleteRegistryTitle'),
+    content: t('settings.confirmDeleteRegistryContent', { name: registry?.name || '' }),
+    positiveText: t('common.delete'),
+    negativeText: t('common.cancel'),
     onPositiveClick: async () => {
       try {
         await registryStore.removeRegistry(id)
-        message.success('删除成功')
+        message.success(t('common.deleteSuccess'))
       } catch (error) {
-        message.error('删除失败: ' + (error as Error).message)
+        message.error(t('common.deleteFailed', { error: (error as Error).message }))
       }
     }
   })
@@ -307,28 +355,116 @@ onMounted(() => {
 
 <style scoped>
 .settings-view {
-  padding: 20px;
-  height: 100%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  padding: 22px;
+  overflow: auto;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  gap: 18px;
 }
 
 .settings-card {
-  flex-shrink: 0;
+  min-height: 100%;
 }
 
-.loading-container {
+.settings-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-form {
+  margin-top: 4px;
+}
+
+.settings-loading {
   display: flex;
   justify-content: center;
-  padding: 20px;
+  padding: 28px 0;
+}
+
+.registry-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.registry-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.registry-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.registry-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.registry-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.registry-url {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  word-break: break-all;
 }
 
 .action-bar {
   display: flex;
-  justify-content: flex-end;
-  padding: 10px 0;
-  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.action-copy {
+  min-width: 0;
+}
+
+.hero-stat-value-text {
+  font-size: 20px;
+  line-height: 1.15;
+}
+
+@media (max-width: 960px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-view {
+    padding: 16px;
+  }
+
+  .settings-card-head,
+  .action-bar,
+  .registry-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .action-bar :deep(.n-button) {
+    width: 100%;
+  }
 }
 </style>

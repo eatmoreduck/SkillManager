@@ -33,6 +33,7 @@ const bindingMethods = {
   ConfigBinding: {
     GetConfig: 'skillmanager/internal/binding.ConfigBinding.GetConfig',
     UpdateProxy: 'skillmanager/internal/binding.ConfigBinding.UpdateProxy',
+    UpdateLanguage: 'skillmanager/internal/binding.ConfigBinding.UpdateLanguage',
     GetProxy: 'skillmanager/internal/binding.ConfigBinding.GetProxy',
     SetProxy: 'skillmanager/internal/binding.ConfigBinding.SetProxy'
   },
@@ -140,8 +141,7 @@ function buildLegacyBridge(): LegacyBindingTree {
 }
 
 export async function bootstrapWailsCompat(): Promise<void> {
-  const currentWindow = getWindow()
-  const bridgeWindow = currentWindow as unknown as {
+  const bridgeWindow = getWindow() as unknown as {
     go?: {
       main?: {
         App?: LegacyBindingTree
@@ -154,7 +154,11 @@ export async function bootstrapWailsCompat(): Promise<void> {
     return
   }
 
-  await getRuntime()
+  try {
+    await getRuntime()
+  } catch (error) {
+    console.warn('[wails] runtime not available, installing stub bridge')
+  }
 
   if (!bridgeWindow.go) {
     bridgeWindow.go = {}

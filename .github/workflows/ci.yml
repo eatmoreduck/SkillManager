@@ -79,7 +79,7 @@ jobs:
     name: Build macOS (${{ matrix.arch }})
     needs: [backend, frontend]
     runs-on: macos-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     strategy:
       fail-fast: false
       matrix:
@@ -125,7 +125,7 @@ jobs:
     name: Build Windows
     needs: [backend, frontend]
     runs-on: windows-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -167,7 +167,7 @@ jobs:
     name: Build Linux
     needs: [backend, frontend]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

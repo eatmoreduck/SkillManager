@@ -25,6 +25,9 @@ func TestFileConfigRepositoryLoadConfigCreatesDefaultFile(t *testing.T) {
 	if cfg.Version != "1.0" {
 		t.Fatalf("LoadConfig() version = %q, want %q", cfg.Version, "1.0")
 	}
+	if cfg.Language != "zh-CN" {
+		t.Fatalf("LoadConfig() language = %q, want %q", cfg.Language, "zh-CN")
+	}
 
 	if len(cfg.Agents) < 2 {
 		t.Fatalf("LoadConfig() agents = %d, want at least 2", len(cfg.Agents))
@@ -66,6 +69,9 @@ agents:
 
 	if cfg.Version != "1.0" {
 		t.Fatalf("LoadConfig() version = %q, want %q", cfg.Version, "1.0")
+	}
+	if cfg.Language != "zh-CN" {
+		t.Fatalf("LoadConfig() language = %q, want %q", cfg.Language, "zh-CN")
 	}
 	if len(cfg.Registries) == 0 || cfg.Registries[0].URL != "https://skills.sh" {
 		t.Fatalf("LoadConfig() registry url migration failed: %+v", cfg.Registries)

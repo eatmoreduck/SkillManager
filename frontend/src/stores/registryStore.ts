@@ -2,6 +2,99 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Registry, RegistrySkill } from '@/types'
 
+function pickFirst(obj: Record<string, unknown>, keys: string[]): unknown {
+  for (const key of keys) {
+    if (obj[key] !== undefined && obj[key] !== null) {
+      return obj[key]
+    }
+  }
+  return undefined
+}
+
+function normalizeString(value: unknown, fallback = ''): string {
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  return fallback
+}
+
+function normalizeBoolean(value: unknown): boolean {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'string') {
+    return value.toLowerCase() === 'true'
+  }
+  if (typeof value === 'number') return value !== 0
+  return false
+}
+
+function normalizeNumber(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+  return 0
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map(item => normalizeString(item))
+    .filter(Boolean)
+}
+
+function normalizeRegistry(item: unknown): Registry | null {
+  if (!item || typeof item !== 'object') {
+    return null
+  }
+
+  const obj = item as Record<string, unknown>
+  const id = normalizeString(pickFirst(obj, ['id', 'ID']))
+  const name = normalizeString(pickFirst(obj, ['name', 'Name']), id)
+
+  return {
+    id: id || name,
+    name,
+    url: normalizeString(pickFirst(obj, ['url', 'URL'])),
+    isDefault: normalizeBoolean(pickFirst(obj, ['isDefault', 'IsDefault']))
+  }
+}
+
+function normalizeRegistrySkill(item: unknown): RegistrySkill | null {
+  if (!item || typeof item !== 'object') {
+    return null
+  }
+
+  const obj = item as Record<string, unknown>
+  const id = normalizeString(pickFirst(obj, ['id', 'ID']))
+  const name = normalizeString(pickFirst(obj, ['name', 'Name']), id || 'Untitled Skill')
+  const author = normalizeString(pickFirst(obj, ['author', 'Author', 'source', 'Source']))
+
+  return {
+    id: id || name,
+    name,
+    description: normalizeString(pickFirst(obj, ['description', 'Description'])),
+    author,
+    stars: normalizeNumber(pickFirst(obj, ['stars', 'Stars', 'installs', 'Installs'])),
+    tags: normalizeStringArray(pickFirst(obj, ['tags', 'Tags'])),
+    installUrl: normalizeString(pickFirst(obj, ['installUrl', 'InstallURL', 'installURL'])),
+    category: normalizeString(pickFirst(obj, ['category', 'Category']))
+  }
+}
+
+function normalizeRegistryArray(data: unknown): Registry[] {
+  if (!Array.isArray(data)) return []
+  return data
+    .map(item => normalizeRegistry(item))
+    .filter((item): item is Registry => item !== null)
+}
+
+function normalizeRegistrySkillArray(data: unknown): RegistrySkill[] {
+  if (!Array.isArray(data)) return []
+  return data
+    .map(item => normalizeRegistrySkill(item))
+    .filter((item): item is RegistrySkill => item !== null)
+}
+
 export const useRegistryStore = defineStore('registry', () => {
   const registries = ref<Registry[]>([])
   const currentRegistry = ref<Registry | null>(null)
@@ -23,9 +116,10 @@ export const useRegistryStore = defineStore('registry', () => {
     error.value = null
     try {
       const result = await window.go.main.App.RegistryBinding.ListRegistries()
-      registries.value = result || []
-      if (result && result.length > 0 && !currentRegistry.value) {
-        currentRegistry.value = result.find(r => r.isDefault) || result[0]
+      console.info('[registryStore] ListRegistries raw result:', typeof result, Array.isArray(result), result)
+      registries.value = normalizeRegistryArray(result)
+      if (registries.value.length > 0 && !currentRegistry.value) {
+        currentRegistry.value = registries.value.find(r => r.isDefault) || registries.value[0]
       }
     } catch (e) {
       error.value = (e as Error).message
@@ -83,7 +177,8 @@ export const useRegistryStore = defineStore('registry', () => {
       const rid = registryId || currentRegistry.value?.id || ''
       const cat = category || ''
       const result = await window.go.main.App.RegistryBinding.Browse(rid, cat)
-      browseResults.value = result || []
+      console.info('[registryStore] Browse raw result:', typeof result, Array.isArray(result), result)
+      browseResults.value = normalizeRegistrySkillArray(result)
     } catch (e) {
       error.value = (e as Error).message
     } finally {
@@ -103,7 +198,8 @@ export const useRegistryStore = defineStore('registry', () => {
     error.value = null
     try {
       const result = await window.go.main.App.RegistryBinding.Search(query)
-      searchResults.value = result || []
+      console.info('[registryStore] Search raw result:', typeof result, Array.isArray(result), result)
+      searchResults.value = normalizeRegistrySkillArray(result)
       searchQuery.value = query
     } catch (e) {
       error.value = (e as Error).message

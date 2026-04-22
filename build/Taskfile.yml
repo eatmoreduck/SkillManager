@@ -33,6 +33,12 @@ tasks:
     vars:
       BUILD_COMMAND: '{{if eq .PRODUCTION "true"}}build:clean{{else}}build{{end}}'
 
+  dev:frontend:
+    summary: Starts the frontend dev server
+    dir: frontend
+    cmds:
+      - npm run dev
+
   generate:icons:
     summary: Generates macOS `.icns` and Windows `.ico` files from the app logo
     sources:
