@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [main, master]
-    tags-ignore: ['v*']  # 版本 tag 不触发 CI，由 Release workflow 处理
+    tags-ignore: ['*']  # 版本 tag 不触发 CI，由 Release workflow 处理
   pull_request:
     branches: [main, master]
 
