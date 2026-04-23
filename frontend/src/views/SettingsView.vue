@@ -1,6 +1,6 @@
 <template>
   <div class="page-shell settings-view">
-    <section class="page-hero">
+    <section class="page-hero settings-hero">
       <div class="hero-copy">
         <p class="hero-kicker">{{ t('settings.heroKicker') }}</p>
         <h2 class="hero-title">{{ t('settings.title') }}</h2>
@@ -24,15 +24,13 @@
     </section>
 
     <div class="settings-grid">
-      <n-card class="apple-card settings-card">
-        <template #header>
-          <div class="settings-card-head">
-            <div>
-              <h3 class="section-title">{{ t('settings.proxySettings') }}</h3>
-              <p class="section-subtitle">{{ t('settings.proxyHint') }}</p>
-            </div>
+      <section class="glass-panel settings-card">
+        <div class="settings-card-head">
+          <div>
+            <h3 class="section-title">{{ t('settings.proxySettings') }}</h3>
+            <p class="section-subtitle">{{ t('settings.proxyHint') }}</p>
           </div>
-        </template>
+        </div>
 
         <n-form
           ref="proxyFormRef"
@@ -99,21 +97,19 @@
             />
           </n-form-item>
         </n-form>
-      </n-card>
+      </section>
 
-      <n-card class="apple-card settings-card">
-        <template #header>
-          <div class="settings-card-head">
-            <div>
-              <h3 class="section-title">{{ t('settings.registryManagement') }}</h3>
-              <p class="section-subtitle">{{ t('settings.registryHint') }}</p>
-            </div>
-            <n-button type="primary" size="small" @click="showAddRegistryModal = true">
-              <template #icon><n-icon><AddOutline /></n-icon></template>
-              {{ t('settings.addRegistry') }}
-            </n-button>
+      <section class="glass-panel settings-card registry-card">
+        <div class="settings-card-head">
+          <div>
+            <h3 class="section-title">{{ t('settings.registryManagement') }}</h3>
+            <p class="section-subtitle">{{ t('settings.registryHint') }}</p>
           </div>
-        </template>
+          <n-button type="primary" size="small" @click="showAddRegistryModal = true">
+            <template #icon><n-icon><AddOutline /></n-icon></template>
+            {{ t('settings.addRegistry') }}
+          </n-button>
+        </div>
 
         <div v-if="registryStore.loading" class="settings-loading">
           <n-spin size="medium" :description="t('common.loading')" />
@@ -146,7 +142,7 @@
             </n-button>
           </div>
         </div>
-      </n-card>
+      </section>
     </div>
 
     <section class="glass-panel action-bar">
@@ -197,7 +193,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import {
-  NCard,
   NForm,
   NFormItem,
   NSwitch,
@@ -355,18 +350,52 @@ onMounted(() => {
 
 <style scoped>
 .settings-view {
-  padding: 22px;
+  padding: 20px;
   overflow: auto;
+}
+
+.settings-hero {
+  align-items: center;
+  padding: 18px 22px;
+}
+
+.settings-hero .hero-copy {
+  max-width: 620px;
+}
+
+.settings-hero .hero-kicker {
+  margin-bottom: 8px;
+}
+
+.settings-hero .hero-subtitle {
+  margin-top: 6px;
+  max-width: 560px;
+  line-height: 1.5;
+}
+
+.settings-hero .hero-stats {
+  gap: 10px;
+  min-width: min(420px, 100%);
+}
+
+.settings-hero .hero-stat {
+  padding: 12px 14px;
+  border-radius: 20px;
+}
+
+.settings-hero .hero-stat-value {
+  font-size: 22px;
 }
 
 .settings-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.04fr) minmax(300px, 0.86fr);
+  gap: 14px;
+  align-items: start;
 }
 
 .settings-card {
-  min-height: 100%;
+  padding: 18px 20px;
 }
 
 .settings-card-head {
@@ -374,22 +403,31 @@ onMounted(() => {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  margin-bottom: 10px;
 }
 
 .settings-form {
-  margin-top: 4px;
+  margin-top: 2px;
+}
+
+.settings-form :deep(.n-form-item) {
+  margin-bottom: 10px;
+}
+
+.settings-form :deep(.n-form-item-feedback-wrapper) {
+  min-height: 0;
 }
 
 .settings-loading {
   display: flex;
   justify-content: center;
-  padding: 28px 0;
+  padding: 20px 0;
 }
 
 .registry-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .registry-row {
@@ -397,8 +435,8 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
-  border-radius: 22px;
+  padding: 12px 14px;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(255, 255, 255, 0.7);
 }
@@ -434,6 +472,10 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding: 16px 18px;
 }
 
 .action-copy {
@@ -441,8 +483,8 @@ onMounted(() => {
 }
 
 .hero-stat-value-text {
-  font-size: 20px;
-  line-height: 1.15;
+  font-size: 18px;
+  line-height: 1.2;
 }
 
 @media (max-width: 960px) {
@@ -461,6 +503,10 @@ onMounted(() => {
   .registry-row {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .settings-card {
+    padding: 16px;
   }
 
   .action-bar :deep(.n-button) {

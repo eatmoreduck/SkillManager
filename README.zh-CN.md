@@ -31,7 +31,13 @@ SkillManager 是一个跨平台桌面应用，用于统一管理多个 AI 编程
 
 ## 📸 截图
 
-> 截图占位
+| 我的技能 | 仓库 |
+|----------|------|
+| <img src="./docs/screenshots/My%20Skills.png" alt="我的技能" width="100%"> | <img src="./docs/screenshots/registry.png" alt="仓库" width="100%"> |
+
+| 代理 | 设置 |
+|------|------|
+| <img src="./docs/screenshots/agents.png" alt="代理" width="100%"> | <img src="./docs/screenshots/settings.png" alt="设置" width="100%"> |
 
 ## 🚀 快速开始
 

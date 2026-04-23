@@ -28,6 +28,16 @@ SkillManager is a desktop application that helps you manage AI coding assistant 
 - 🔄 **Sync** skills across multiple agents (Claude Code, Gemini CLI, Cursor, etc.)
 - 📊 **Monitor** which skills are active for each agent
 
+## Screenshots
+
+| My Skills | Registry |
+|-----------|----------|
+| <img src="./docs/screenshots/My%20Skills.png" alt="My Skills" width="100%"> | <img src="./docs/screenshots/registry.png" alt="Registry" width="100%"> |
+
+| Agents | Settings |
+|--------|----------|
+| <img src="./docs/screenshots/agents.png" alt="Agents" width="100%"> | <img src="./docs/screenshots/settings.png" alt="Settings" width="100%"> |
+
 ## Supported Agents
 
 | Agent | Status | Skills Directory |

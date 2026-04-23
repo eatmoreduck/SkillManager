@@ -158,9 +158,9 @@ function handleDropdownSelect(key: string) {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  min-height: 218px;
-  padding: 20px 22px 18px;
+  gap: 10px;
+  min-height: 176px;
+  padding: 16px 18px 14px;
 }
 
 .card-topbar {
@@ -173,19 +173,19 @@ function handleDropdownSelect(key: string) {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
 .skill-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--text-primary);
   background: linear-gradient(135deg, rgba(93, 161, 255, 0.34), rgba(131, 226, 186, 0.24));
@@ -200,16 +200,16 @@ function handleDropdownSelect(key: string) {
 }
 
 .skill-overline {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-tertiary);
 }
 
 .skill-name {
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.2;
   letter-spacing: -0.03em;
   color: var(--text-primary);
@@ -221,11 +221,11 @@ function handleDropdownSelect(key: string) {
 
 .skill-description {
   color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.7;
-  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  margin-bottom: 8px;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -233,19 +233,19 @@ function handleDropdownSelect(key: string) {
 .skill-metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .metric-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -256,15 +256,15 @@ function handleDropdownSelect(key: string) {
 .skill-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .skill-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  font-size: 12px;
+  gap: 10px;
+  font-size: 11px;
   color: var(--text-tertiary);
   margin-top: auto;
 }
@@ -276,17 +276,17 @@ function handleDropdownSelect(key: string) {
 .agent-icons {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .agent-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: 4px;
+  padding: 3px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
 }

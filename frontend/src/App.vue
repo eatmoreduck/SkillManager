@@ -21,7 +21,9 @@
                 @expand="collapsed = false"
               >
                 <div class="logo">
-                  <div class="logo-mark">SM</div>
+                  <div class="logo-mark">
+                    <img class="logo-mark-image" :src="appLogo" alt="SkillManager logo">
+                  </div>
                   <div v-if="!collapsed" class="logo-copy">
                     <strong>SkillManager</strong>
                     <span>{{ t('app.brandSubtitle') }}</span>
@@ -44,21 +46,6 @@
               </n-layout-sider>
 
               <n-layout class="main-layout">
-                <n-layout-header class="app-header">
-                  <div class="header-copy">
-                    <span class="header-kicker">{{ t('app.workspaceLabel') }}</span>
-                    <div>
-                      <h1 class="page-title">{{ pageTitle }}</h1>
-                      <p class="page-subtitle">{{ pageSubtitle }}</p>
-                    </div>
-                  </div>
-
-                  <div class="header-pill">
-                    <span class="status-dot" />
-                    {{ t('app.statusBadge') }}
-                  </div>
-                </n-layout-header>
-
                 <n-layout-content class="app-content">
                   <div class="page-container">
                     <router-view />
@@ -76,11 +63,11 @@
 <script setup lang="ts">
 import { ref, computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import appLogo from '@/assets/logo.png'
 import {
   NConfigProvider,
   NLayout,
   NLayoutSider,
-  NLayoutHeader,
   NLayoutContent,
   NMenu,
   NMessageProvider,
@@ -213,34 +200,6 @@ const currentMenuKey = computed(() => {
   return 'skills'
 })
 
-const pageTitle = computed(() => {
-  switch (currentMenuKey.value) {
-    case 'registry':
-      return t('nav.registry')
-    case 'agents':
-      return t('nav.agents')
-    case 'settings':
-      return t('nav.settings')
-    case 'skills':
-    default:
-      return t('nav.skills')
-  }
-})
-
-const pageSubtitle = computed(() => {
-  switch (currentMenuKey.value) {
-    case 'registry':
-      return t('app.pageSubtitle.registry')
-    case 'agents':
-      return t('app.pageSubtitle.agents')
-    case 'settings':
-      return t('app.pageSubtitle.settings')
-    case 'skills':
-    default:
-      return t('app.pageSubtitle.skills')
-  }
-})
-
 function renderIcon(icon: any) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
@@ -312,7 +271,9 @@ select {
 }
 
 .page-shell {
+  width: 100%;
   height: 100%;
+  flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -335,6 +296,7 @@ select {
 .page-hero,
 .glass-panel,
 .state-surface {
+  width: 100%;
   border-radius: 32px;
 }
 
@@ -779,11 +741,15 @@ select {
 }
 
 .main-layout {
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
   background: transparent;
 }
 
 .main-layout :deep(> .n-layout-scroll-container) {
   height: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -800,16 +766,16 @@ select {
 .logo-mark {
   width: 44px;
   height: 44px;
-  border-radius: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: white;
-  background: linear-gradient(135deg, #3f8cff, #7dd8ff 55%, #8ce7c1 100%);
-  box-shadow: 0 16px 30px rgba(68, 128, 225, 0.28);
+  flex-shrink: 0;
+}
+
+.logo-mark-image {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .logo-copy {
@@ -869,91 +835,38 @@ select {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 10px 26px rgba(62, 106, 164, 0.12);
 }
 
-.app-header {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 30px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.58));
-  box-shadow: var(--glass-shadow-soft);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
-}
-
-.header-copy {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  min-width: 0;
-}
-
-.header-kicker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 88px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent-blue);
-}
-
-.page-title {
-  font-size: clamp(24px, 3vw, 32px);
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  color: var(--text-primary);
-}
-
-.page-subtitle {
-  margin-top: 8px;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-}
-
-.header-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #5cc7ff, #2a7fff);
-  box-shadow: 0 0 0 6px rgba(42, 127, 255, 0.12);
-}
-
 .app-content {
   flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
   min-height: 0;
   display: flex;
   overflow: hidden;
   background: transparent;
 }
 
+.app-content :deep(> .n-layout-scroll-container) {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+}
+
 .page-container {
   flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
   min-height: 0;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+}
+
+.page-container > * {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
 }
 
 @media (max-width: 900px) {
@@ -963,16 +876,6 @@ select {
 
   .app-layout :deep(> .n-layout-scroll-container) {
     gap: 14px;
-  }
-
-  .app-header {
-    padding: 18px;
-  }
-
-  .header-copy {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
   }
 }
 
@@ -987,17 +890,6 @@ select {
 
   .app-sider {
     border-radius: 26px;
-  }
-
-  .app-header {
-    flex-direction: column;
-    align-items: flex-start;
-    border-radius: 26px;
-  }
-
-  .header-pill {
-    align-self: stretch;
-    justify-content: center;
   }
 }
 </style>

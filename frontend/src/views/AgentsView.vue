@@ -1,6 +1,6 @@
 <template>
   <div class="page-shell agents-view">
-    <section class="page-hero">
+    <section class="page-hero agents-hero">
       <div class="hero-copy">
         <p class="hero-kicker">{{ t('agents.heroKicker') }}</p>
         <h2 class="hero-title">{{ t('agents.title') }}</h2>
@@ -23,7 +23,7 @@
       </div>
     </section>
 
-    <section class="glass-panel toolbar-panel">
+    <section class="glass-panel toolbar-panel agents-toolbar-panel">
       <div class="filter-toolbar">
         <div class="filter-toolbar-left">
           <n-button @click="handleRefresh" :loading="agentStore.loading">
@@ -78,28 +78,35 @@
       </div>
 
       <div class="agents-grid">
-        <n-card
+        <article
           v-for="agent in agentStore.agents"
           :key="agent.id"
           class="apple-card agent-card"
-          hoverable
         >
-          <template #header>
-            <div class="agent-header">
-              <div class="agent-header-copy">
-                <span class="agent-overline">{{ agent.binaryName }}</span>
-                <span class="agent-title">{{ agent.name }}</span>
-              </div>
+          <div class="agent-card-top">
+            <div class="agent-header-copy">
+              <span class="agent-overline">{{ agent.binaryName }}</span>
+              <span class="agent-title">{{ agent.name }}</span>
             </div>
-          </template>
 
-          <template #header-extra>
             <n-switch
               :value="agent.isEnabled"
               @update:value="(val: boolean) => handleToggle(agent.id, val)"
               :loading="togglingId === agent.id"
             />
-          </template>
+          </div>
+
+          <div class="agent-tags">
+            <n-tag :type="agent.isInstalled ? 'success' : 'default'" size="small">
+              {{ agent.isInstalled ? t('common.installed') : t('common.notInstalled') }}
+            </n-tag>
+            <n-tag v-if="agent.isCustom" type="warning" size="small">
+              {{ t('common.custom') }}
+            </n-tag>
+            <n-tag type="info" size="small">
+              {{ t('agents.skillCount', { count: getSkillCount(agent.id) }) }}
+            </n-tag>
+          </div>
 
           <div class="agent-body">
             <div class="agent-line">
@@ -116,37 +123,18 @@
             </div>
           </div>
 
-          <template #footer>
-            <div class="agent-tags">
-              <n-tag :type="agent.isInstalled ? 'success' : 'default'" size="small">
-                {{ agent.isInstalled ? t('common.installed') : t('common.notInstalled') }}
-              </n-tag>
-              <n-tag v-if="agent.isCustom" type="warning" size="small">
-                {{ t('common.custom') }}
-              </n-tag>
-              <n-tag type="info" size="small">
-                {{ t('agents.skillCount', { count: getSkillCount(agent.id) }) }}
-              </n-tag>
-            </div>
-          </template>
-
-          <template #action>
-            <div class="agent-actions">
-              <n-popconfirm
-                v-if="agent.isCustom"
-                @positive-click="handleRemove(agent.id)"
-              >
-                <template #trigger>
-                  <n-button type="error" size="small" :loading="removingId === agent.id">
-                    <template #icon><n-icon><TrashOutline /></n-icon></template>
-                    {{ t('common.delete') }}
-                  </n-button>
-                </template>
-                {{ t('agents.removeConfirm') }}
-              </n-popconfirm>
-            </div>
-          </template>
-        </n-card>
+          <div v-if="agent.isCustom" class="agent-actions">
+            <n-popconfirm @positive-click="handleRemove(agent.id)">
+              <template #trigger>
+                <n-button type="error" size="small" :loading="removingId === agent.id">
+                  <template #icon><n-icon><TrashOutline /></n-icon></template>
+                  {{ t('common.delete') }}
+                </n-button>
+              </template>
+              {{ t('agents.removeConfirm') }}
+            </n-popconfirm>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -203,7 +191,6 @@ import {
   NForm,
   NFormItem,
   NInput,
-  NCard,
   NSpace,
   NTag,
   NSwitch,
@@ -336,36 +323,88 @@ onMounted(async () => {
 
 <style scoped>
 .agents-view {
-  padding: 22px;
+  padding: 20px;
+}
+
+.agents-hero {
+  align-items: center;
+  padding: 18px 22px;
+}
+
+.agents-hero .hero-copy {
+  max-width: 620px;
+}
+
+.agents-hero .hero-kicker {
+  margin-bottom: 8px;
+}
+
+.agents-hero .hero-subtitle {
+  margin-top: 6px;
+  max-width: 560px;
+  line-height: 1.5;
+}
+
+.agents-hero .hero-stats {
+  gap: 10px;
+  min-width: min(390px, 100%);
+}
+
+.agents-hero .hero-stat {
+  padding: 12px 14px;
+  border-radius: 20px;
+}
+
+.agents-hero .hero-stat-value {
+  font-size: 22px;
+}
+
+.agents-toolbar-panel {
+  padding-bottom: 16px;
 }
 
 .agents-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
   overflow: auto;
   flex: 1;
   min-height: 0;
   align-content: start;
-  padding-right: 6px;
+  padding-right: 4px;
+}
+
+.agent-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.agent-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .agent-header-copy {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  min-width: 0;
 }
 
 .agent-overline {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-tertiary);
 }
 
 .agent-title {
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.2;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -375,17 +414,17 @@ onMounted(async () => {
 .agent-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .agent-line {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .agent-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -393,24 +432,37 @@ onMounted(async () => {
 }
 
 .agent-value {
+  font-size: 13px;
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.45;
   word-break: break-word;
+}
+
+.agent-line-path .agent-value {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .agent-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .agent-actions {
   display: flex;
   justify-content: flex-end;
+  margin-top: auto;
 }
 
 @media (max-width: 768px) {
   .agents-view {
+    padding: 16px;
+  }
+
+  .agent-card {
     padding: 16px;
   }
 }

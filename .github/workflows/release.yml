@@ -1,6 +1,10 @@
 name: Release
 
 on:
+  push:
+    tags:
+      - 'v*'
+      - '*.*.*'
   release:
     types: [published]
   workflow_dispatch:
@@ -21,7 +25,7 @@ env:
   NODE_VERSION: '20.20.1'
   WAILS_VERSION: 'v3.0.0-alpha.74'
   TARGET_ARCH: 'amd64'
-  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.event.release.tag_name }}
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.event_name == 'release' && github.event.release.tag_name || github.ref_name }}
 
 jobs:
   release-macos:
@@ -203,7 +207,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh --version
-          gh release view "${{ env.RELEASE_TAG }}" --repo "${{ github.repository }}" --json tagName,isDraft,isImmutable,url
+
+      - name: Ensure GitHub Release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${{ env.RELEASE_TAG }}" --repo "${{ github.repository }}" --json tagName,isDraft,isImmutable,url \
+            || gh release create "${{ env.RELEASE_TAG }}" --repo "${{ github.repository }}" --title "${{ env.RELEASE_TAG }}" --generate-notes
 
       - name: Upload assets to GitHub Release
         env:

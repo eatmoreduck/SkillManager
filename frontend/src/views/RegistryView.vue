@@ -1,6 +1,6 @@
 <template>
   <div class="page-shell registry-view">
-    <section class="page-hero">
+    <section class="page-hero registry-hero">
       <div class="hero-copy">
         <p class="hero-kicker">{{ t('registry.heroKicker') }}</p>
         <h2 class="hero-title">{{ t('registry.title') }}</h2>
@@ -23,7 +23,7 @@
       </div>
     </section>
 
-    <section class="glass-panel toolbar-panel">
+    <section class="glass-panel toolbar-panel registry-toolbar-panel">
       <div class="filter-toolbar">
         <div class="filter-toolbar-left registry-toolbar-left">
           <n-select
@@ -438,20 +438,54 @@ watch(searchQuery, (value) => {
 
 <style scoped>
 .registry-view {
-  padding: 22px;
+  padding: 20px;
+}
+
+.registry-hero {
+  align-items: center;
+  padding: 18px 22px;
+}
+
+.registry-hero .hero-copy {
+  max-width: 620px;
+}
+
+.registry-hero .hero-kicker {
+  margin-bottom: 8px;
+}
+
+.registry-hero .hero-subtitle {
+  margin-top: 6px;
+}
+
+.registry-hero .hero-stats {
+  min-width: min(430px, 100%);
+  gap: 10px;
+}
+
+.registry-hero .hero-stat {
+  padding: 14px 16px;
+}
+
+.registry-hero .hero-stat-value {
+  font-size: 24px;
+}
+
+.registry-toolbar-panel {
+  padding: 16px 18px;
 }
 
 .registry-toolbar-left {
-  flex: 1 1 560px;
+  flex: 1 1 520px;
   min-width: 0;
 }
 
 .registry-select {
-  width: min(240px, 100%);
+  width: min(220px, 100%);
 }
 
 .search-input {
-  width: min(320px, 100%);
+  width: min(280px, 100%);
 }
 
 .error-alert {
@@ -461,8 +495,8 @@ watch(searchQuery, (value) => {
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
   overflow: auto;
   flex: 1;
   min-height: 0;
@@ -474,9 +508,9 @@ watch(searchQuery, (value) => {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  min-height: 244px;
-  padding: 20px 22px 18px;
+  gap: 12px;
+  min-height: 196px;
+  padding: 16px 18px 14px;
 }
 
 .card-header {
@@ -489,7 +523,7 @@ watch(searchQuery, (value) => {
 .card-copy {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -502,7 +536,7 @@ watch(searchQuery, (value) => {
 }
 
 .skill-name {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.2;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -518,11 +552,11 @@ watch(searchQuery, (value) => {
 
 .skill-description {
   color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.7;
-  margin-bottom: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 8px;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -530,8 +564,8 @@ watch(searchQuery, (value) => {
 .skill-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .skill-meta {
@@ -554,11 +588,11 @@ watch(searchQuery, (value) => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.7);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 

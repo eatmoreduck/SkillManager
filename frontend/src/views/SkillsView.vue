@@ -1,6 +1,6 @@
 <template>
   <div class="page-shell skills-view">
-    <section class="page-hero">
+    <section class="page-hero skills-hero">
       <div class="hero-copy">
         <p class="hero-kicker">{{ t('skills.heroKicker') }}</p>
         <h2 class="hero-title">{{ t('skills.title') }}</h2>
@@ -23,7 +23,7 @@
       </div>
     </section>
 
-    <section class="glass-panel toolbar-panel">
+    <section class="glass-panel toolbar-panel skills-toolbar-panel">
       <div class="filter-toolbar skills-toolbar">
         <div class="filter-toolbar-left skills-toolbar-left">
           <n-input
@@ -242,16 +242,51 @@ onMounted(async () => {
 
 <style scoped>
 .skills-view {
-  padding: 22px;
+  padding: 20px;
+}
+
+.skills-hero {
+  align-items: center;
+  padding: 18px 22px;
+}
+
+.skills-hero .hero-copy {
+  max-width: 600px;
+}
+
+.skills-hero .hero-kicker {
+  margin-bottom: 8px;
+}
+
+.skills-hero .hero-subtitle {
+  margin-top: 6px;
+}
+
+.skills-hero .hero-stats {
+  min-width: min(380px, 100%);
+  gap: 8px;
+}
+
+.skills-hero .hero-stat {
+  padding: 12px 14px;
+  border-radius: 20px;
+}
+
+.skills-hero .hero-stat-value {
+  font-size: 22px;
+}
+
+.skills-toolbar-panel {
+  padding: 16px 18px;
 }
 
 .skills-toolbar-left {
-  flex: 1 1 360px;
+  flex: 1 1 320px;
   min-width: 0;
 }
 
 .search-input {
-  width: min(360px, 100%);
+  width: min(320px, 100%);
 }
 
 .error-alert {
@@ -261,13 +296,13 @@ onMounted(async () => {
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
   overflow: auto;
   flex: 1;
   min-height: 0;
   align-content: start;
-  padding-right: 6px;
+  padding-right: 4px;
 }
 
 @media (max-width: 768px) {
